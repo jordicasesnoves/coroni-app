@@ -1,1 +1,1 @@
-export const baseURL = 'https://api.covid19tracking.narrativa.com/api/';
+export const baseURL = 'https://api.covid19tracking.narrativa.com/api';

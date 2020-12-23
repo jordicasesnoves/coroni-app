@@ -6,7 +6,7 @@ const HomePage = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    getCountries()
+    getDataByDateRange('2020-12-22', '2020-12-23')
       .then((res) => res.json())
       .then((data) => console.log(data));
   }, []);
