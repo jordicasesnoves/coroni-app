@@ -1,12 +1,12 @@
-import React from 'react'
+import React from 'react';
 
 import {
   BrowserRouter as Router,
   Route,
   RouteProps,
-  Switch
-} from 'react-router-dom'
-import { Routes } from '../../routes'
+  Switch,
+} from 'react-router-dom';
+import { Routes } from '../../routes';
 
 const App = (): JSX.Element => {
   return (
@@ -18,12 +18,13 @@ const App = (): JSX.Element => {
               path={route.path}
               exact={route.exact}
               component={route.component}
-            ></Route>
+              key={route?.path?.toString()}
+            />
           ))}
         </Switch>
       </div>
     </Router>
-  )
-}
+  );
+};
 
-export default App
+export default App;
