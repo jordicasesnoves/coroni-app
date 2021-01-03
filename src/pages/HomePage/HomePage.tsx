@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { forEachChild } from 'typescript';
 import MapChart from '../../components/MapChart/MapChart';
 import { getCountryDataByDate } from '../../services/api';
+import ReactTooltip from 'react-tooltip';
 
 const HomePage = () => {
   const [countryData, setCountryData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [content, setContent] = useState<string>('');
   const [domainData, setDomainData] = useState<any>(null);
+  const [selectedProperty, setSelectedProperty] = useState<string>(
+    'today_confirmed'
+  );
 
   useEffect(() => {
     // API's date format
@@ -32,15 +35,22 @@ const HomePage = () => {
       .then((res) => res.json())
       .catch((err) => console.log(err))
       .then((data) => {
+        console.log(data);
         const regionsData = data.dates[todayDate].countries.Spain.regions;
         setCountryData(regionsData);
-        setDomainData(calculateDomain(regionsData));
+        setDomainData(calculateDomain(regionsData, selectedProperty));
         setLoading(false);
       });
   }, []);
 
-  const calculateDomain = (data: any): any => {
-    let propertyCriteria = 'today_new_confirmed';
+  const handlePropertyChange = (event: any): any => {
+    let newProperty = event.target.value;
+    setSelectedProperty(newProperty);
+    setDomainData(calculateDomain(countryData, newProperty));
+  };
+
+  const calculateDomain = (data: any, property: any): any => {
+    let propertyCriteria = property;
 
     // Calculate max
     // -------------
@@ -94,8 +104,6 @@ const HomePage = () => {
         }
       }
     });
-
-    console.log(minRegion, maxRegion);
     return [minRegion, maxRegion];
   };
 
@@ -104,6 +112,10 @@ const HomePage = () => {
   return (
     <div>
       <span>Home Page</span>
+      <select value={selectedProperty} onChange={handlePropertyChange}>
+        <option value="today_confirmed">Confirmados Hoy</option>
+        <option value="today_new_confirmed">Confirmados 24h</option>
+      </select>
       <div
         style={{
           width: 600,
@@ -112,7 +124,13 @@ const HomePage = () => {
           border: '1px solid black',
         }}
       >
-        <MapChart domainData={domainData} countryData={countryData} />
+        <MapChart
+          domainData={domainData}
+          countryData={countryData}
+          setTooltipContent={setContent}
+          selectedProperty={selectedProperty}
+        />
+        <ReactTooltip>{content}</ReactTooltip>
       </div>
     </div>
   );

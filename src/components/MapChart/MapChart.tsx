@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -18,16 +18,51 @@ const geoUrl2 =
 interface MapChartProps {
   domainData: any;
   countryData: any;
+  setTooltipContent: any;
+  selectedProperty: any;
 }
 
-const MapChart = ({ domainData, countryData }: MapChartProps): JSX.Element => {
-  console.log(countryData);
+const rounded = (num: number) => {
+  if (num > 1000000000) {
+    return Math.round(num / 100000000) / 10 + 'Bn';
+  } else if (num > 1000000) {
+    return Math.round(num / 100000) / 10 + 'M';
+  } else {
+    return Math.round(num / 100) / 10 + 'K';
+  }
+};
+
+const scale = () => {};
+
+const MapChart = ({
+  domainData,
+  countryData,
+  setTooltipContent,
+  selectedProperty,
+}: MapChartProps): JSX.Element => {
+  console.log(selectedProperty);
   const colorScale = scaleQuantize<string>()
-    .domain([domainData[0].number, domainData[1].number])
-    .range(['#ffedea', '#ffad9f', '#e2492d']);
+    // Dominio: 0, 4000
+    .domain([domainData[0].number, domainData[1].number / 4])
+    .range([
+      '#ffedea',
+      '#ffcec5',
+      '#ffad9f',
+      '#ff8a75',
+      '#ff5533',
+      '#e2492d',
+      '#be3d26',
+      '#9a311f',
+      '#782618',
+    ]);
 
   return (
-    <ComposableMap width={600} height={400} projectionConfig={{ scale: 1800 }}>
+    <ComposableMap
+      data-tip=""
+      width={600}
+      height={400}
+      projectionConfig={{ scale: 1800 }}
+    >
       <ZoomableGroup center={[-4.5, 40]}>
         <Geographies geography={geoUrl2}>
           {({ geographies }) => (
@@ -70,15 +105,27 @@ const MapChart = ({ domainData, countryData }: MapChartProps): JSX.Element => {
                   }
                 });
 
-                console.log(cur);
-
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={colorScale(cur ? cur.today_new_confirmed : '#EEE')}
+                    fill={colorScale(cur ? cur[selectedProperty] : '#EEE')}
                     stroke="#EAEAEC"
                     strokeWidth={0.5}
+                    onMouseEnter={() => {
+                      const { NAME_2 } = geo.properties;
+                      const property = cur[selectedProperty];
+                      setTooltipContent(`${NAME_2} — ${rounded(property)}`);
+                    }}
+                    onMouseLeave={() => {
+                      setTooltipContent('');
+                    }}
+                    style={{
+                      hover: {
+                        fill: '#F53',
+                        outline: 'none',
+                      },
+                    }}
                   />
                 );
               })}
@@ -90,4 +137,4 @@ const MapChart = ({ domainData, countryData }: MapChartProps): JSX.Element => {
   );
 };
 
-export default MapChart;
+export default memo(MapChart);
