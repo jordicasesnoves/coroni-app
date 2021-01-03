@@ -1,3 +1,5 @@
-import App from './App/App'
+import App from './App/App';
+import MapChart from './MapChart/MapChart';
+import GridDataCard from './GridDataCard/GridDataCard';
 
-export { App }
+export { App, MapChart, GridDataCard };
