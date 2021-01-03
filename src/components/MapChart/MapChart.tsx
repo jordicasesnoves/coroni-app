@@ -71,12 +71,12 @@ const MapChart = ({
 
   return (
     <ComposableMap
+      height={600}
       data-tip=""
-      width={600}
-      height={400}
-      projectionConfig={{ scale: 1800 }}
+      className="rounded-lg"
+      projectionConfig={{ scale: 1000 }}
     >
-      <ZoomableGroup center={[-4.5, 40]}>
+      <ZoomableGroup center={[-3.5, 40]} zoom={3.5}>
         {/* World Map */}
         <Geographies geography={geoUrl2}>
           {({ geographies }) => (
@@ -88,6 +88,7 @@ const MapChart = ({
                   fill="#9998A3"
                   stroke="#EAEAEC"
                   strokeWidth={0.5}
+                  className="outline-none"
                 />
               ))}
             </>
@@ -108,6 +109,7 @@ const MapChart = ({
                     fill={colorScale(cur ? cur[selectedProperty] : '#EEE')}
                     stroke="#EAEAEC"
                     strokeWidth={0.5}
+                    className="outline-none"
                     onMouseEnter={() => {
                       const { NAME_2 } = geo.properties;
                       const property = cur[selectedProperty];
@@ -119,7 +121,6 @@ const MapChart = ({
                     style={{
                       hover: {
                         fill: '#F53',
-                        outline: 'none',
                       },
                     }}
                   />

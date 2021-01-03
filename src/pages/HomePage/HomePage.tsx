@@ -29,6 +29,7 @@ const HomePage = () => {
         const regionsData = data.dates[todayDate].countries.Spain.regions;
         setCountryData(regionsData);
         setDomainData(calculateDomain(regionsData, selectedProperty));
+        calcTopProvinces(regionsData);
         setLoading(false);
       });
   }, []);
@@ -39,12 +40,14 @@ const HomePage = () => {
     setDomainData(calculateDomain(countryData, newProperty));
   };
 
+  const calcTopProvinces = (data: any): void => {
+    console.log(data);
+  };
+
   if (loading) return <span>Loading...</span>;
 
   return (
-    <>
-      <span>Datos a fecha de: {totalData.date}</span>
-
+    <div className="flex flex-col space-y-12">
       <div className="mt-4 grid grid-cols-4 gap-4">
         <GridDataCard
           title={totalData.today_new_confirmed}
@@ -64,25 +67,38 @@ const HomePage = () => {
         />
       </div>
 
-      {/* <div>
-        <select value={selectedProperty} onChange={handlePropertyChange}>
-          <option value="today_confirmed">Total confirmados</option>
-          <option value="today_new_confirmed">Confirmados 24h</option>
-          <option value="today_deaths">Total muertes</option>
-          <option value="today_new_deaths">Muertes 24h</option>
-        </select>
-      </div> */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="col-span-2 flex flex-col space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-3xl font-medium">Mapa provincias</span>
+            <select
+              className="bg-transparent self-center text-gray-600"
+              value={selectedProperty}
+              onChange={handlePropertyChange}
+            >
+              <option value="today_confirmed">Total confirmados</option>
+              <option value="today_new_confirmed">Confirmados 24h</option>
+              <option value="today_deaths">Total muertes</option>
+              <option value="today_new_deaths">Muertes 24h</option>
+            </select>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg">
+            <MapChart
+              domainData={domainData}
+              countryData={countryData}
+              setTooltipContent={setContent}
+              selectedProperty={selectedProperty}
+            />
+            <ReactTooltip>{content}</ReactTooltip>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow-lg px-4 py-2 col-span-1 flex flex-col space-y-2">
+          <span className="text-xl font-medium">Top provincias</span>
+        </div>
+      </div>
 
-      {/* <div className="w-64">
-        <MapChart
-          domainData={domainData}
-          countryData={countryData}
-          setTooltipContent={setContent}
-          selectedProperty={selectedProperty}
-        />
-        <ReactTooltip>{content}</ReactTooltip>
-      </div> */}
-    </>
+      <span>Datos a fecha de: {totalData.date}</span>
+    </div>
   );
 };
 
