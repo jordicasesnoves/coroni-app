@@ -10,6 +10,8 @@ import {
 } from 'react-simple-maps';
 import { scaleQuantize } from 'd3-scale';
 
+import { rounded } from '../../utils/utils';
+
 import geoUrl from '../../data/provincias.json';
 
 const geoUrl2 =
@@ -22,18 +24,6 @@ interface MapChartProps {
   selectedProperty: any;
 }
 
-const rounded = (num: number) => {
-  if (num > 1000000000) {
-    return Math.round(num / 100000000) / 10 + 'Bn';
-  } else if (num > 1000000) {
-    return Math.round(num / 100000) / 10 + 'M';
-  } else {
-    return Math.round(num / 100) / 10 + 'K';
-  }
-};
-
-const scale = () => {};
-
 const MapChart = ({
   domainData,
   countryData,
@@ -42,7 +32,6 @@ const MapChart = ({
 }: MapChartProps): JSX.Element => {
   console.log(selectedProperty);
   const colorScale = scaleQuantize<string>()
-    // Dominio: 0, 4000
     .domain([domainData[0].number, domainData[1].number / 4])
     .range([
       '#ffedea',

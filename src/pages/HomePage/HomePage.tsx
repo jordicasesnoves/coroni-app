@@ -115,6 +115,8 @@ const HomePage = () => {
       <select value={selectedProperty} onChange={handlePropertyChange}>
         <option value="today_confirmed">Confirmados Hoy</option>
         <option value="today_new_confirmed">Confirmados 24h</option>
+        <option value="today_deaths">Muertes hoy</option>
+        <option value="today_new_deaths">Muertes 24h</option>
       </select>
       <div
         style={{
