@@ -30,7 +30,31 @@ const MapChart = ({
   setTooltipContent,
   selectedProperty,
 }: MapChartProps): JSX.Element => {
-  console.log(selectedProperty);
+  const findCurrentGeo = (geo: any): any => {
+    let cur: any = null;
+    countryData.forEach((region: any) => {
+      if (region.sub_regions.length > 0) {
+        region.sub_regions.forEach((subRegion: any) => {
+          if (
+            subRegion.name === geo.properties.NAME_2 ||
+            subRegion.name === geo.properties.VARNAME_2
+          ) {
+            cur = subRegion;
+          }
+        });
+      } else {
+        if (
+          region.name === geo.properties.NAME_2 ||
+          region.name === geo.properties.VARNAME_2
+        ) {
+          cur = region;
+        }
+      }
+    });
+
+    return cur;
+  };
+
   const colorScale = scaleQuantize<string>()
     .domain([domainData[0].number, domainData[1].number / 4])
     .range([
@@ -53,6 +77,7 @@ const MapChart = ({
       projectionConfig={{ scale: 1800 }}
     >
       <ZoomableGroup center={[-4.5, 40]}>
+        {/* World Map */}
         <Geographies geography={geoUrl2}>
           {({ geographies }) => (
             <>
@@ -68,31 +93,13 @@ const MapChart = ({
             </>
           )}
         </Geographies>
+
+        {/* Spain Map */}
         <Geographies geography={geoUrl}>
           {({ geographies }) => (
             <>
               {geographies.map((geo) => {
-                let cur: any = null;
-
-                countryData.forEach((region: any) => {
-                  if (region.sub_regions.length > 0) {
-                    region.sub_regions.forEach((subRegion: any) => {
-                      if (
-                        subRegion.name === geo.properties.NAME_2 ||
-                        subRegion.name === geo.properties.VARNAME_2
-                      ) {
-                        cur = subRegion;
-                      }
-                    });
-                  } else {
-                    if (
-                      region.name === geo.properties.NAME_2 ||
-                      region.name === geo.properties.VARNAME_2
-                    ) {
-                      cur = region;
-                    }
-                  }
-                });
+                let cur: any = findCurrentGeo(geo);
 
                 return (
                   <Geography
