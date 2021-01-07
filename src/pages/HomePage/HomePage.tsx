@@ -89,6 +89,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col space-y-12">
+      <span className="text-2xl">Datos a fecha de: {totalData.date}</span>
       <div className="mt-4 grid grid-cols-4 gap-4">
         <GridDataCard
           title={totalData.today_new_confirmed}
@@ -147,8 +148,6 @@ const HomePage = () => {
           </ul>
         </div>
       </div>
-
-      <span>Datos a fecha de: {totalData.date}</span>
     </div>
   );
 };
