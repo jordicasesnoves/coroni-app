@@ -1,14 +1,11 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { memo } from 'react';
 import {
   ComposableMap,
   Geographies,
   Geography,
-  Marker,
-  Annotation,
   ZoomableGroup,
-  Graticule,
 } from 'react-simple-maps';
-import { scaleQuantize } from 'd3-scale';
+import { scaleQuantile } from 'd3-scale';
 
 import { rounded } from '../../utils/utils';
 
@@ -22,6 +19,7 @@ interface MapChartProps {
   countryData: any;
   setTooltipContent: any;
   selectedProperty: any;
+  dataSet: any;
 }
 
 const MapChart = ({
@@ -29,6 +27,7 @@ const MapChart = ({
   countryData,
   setTooltipContent,
   selectedProperty,
+  dataSet,
 }: MapChartProps): JSX.Element => {
   const findCurrentGeo = (geo: any): any => {
     let cur: any = null;
@@ -55,8 +54,8 @@ const MapChart = ({
     return cur;
   };
 
-  const colorScale = scaleQuantize<string>()
-    .domain([domainData[0].number, domainData[1].number / 4])
+  const colorScale = scaleQuantile<string>()
+    .domain(dataSet)
     .range([
       '#ffedea',
       '#ffcec5',
@@ -66,8 +65,9 @@ const MapChart = ({
       '#e2492d',
       '#be3d26',
       '#9a311f',
-      '#782618',
-    ]);
+      '#260c08',
+    ])
+    .unknown('#ccc');
 
   return (
     <ComposableMap

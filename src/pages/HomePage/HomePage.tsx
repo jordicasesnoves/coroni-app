@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCountryDataByDate } from '../../services/api';
 import ReactTooltip from 'react-tooltip';
 import { GridDataCard, MapChart } from '../../components';
-import { calculateDomain, getTodayDate } from '../../utils/utils';
+import { calculateDomain, getDataSet, getTodayDate } from '../../utils/utils';
 
 const HomePage = () => {
   const [totalData, setTotalData] = useState<any>(null);
@@ -13,24 +13,25 @@ const HomePage = () => {
   const [selectedProperty, setSelectedProperty] = useState<string>(
     'today_confirmed'
   );
+  const [dataSet, setDataSet] = useState<any>(null);
 
   const [topProvinces, setTopProvinces] = useState<any>(null);
 
   useEffect(() => {
-    // API's date format
-    // yyyy-mm-dd
+    getData();
+  }, [selectedProperty]);
 
+  const getData = (): any => {
     let todayDate = getTodayDate();
-
     getCountryDataByDate(todayDate, 'Spain')
       .then((res) => res.json())
       .catch((err) => console.log(err))
       .then((data) => {
-        console.log(data);
         setTotalData(data.dates[todayDate].countries.Spain);
         const regionsData = data.dates[todayDate].countries.Spain.regions;
         setCountryData(regionsData);
         setDomainData(calculateDomain(regionsData, selectedProperty));
+        setDataSet(getDataSet(regionsData, selectedProperty));
         calcTopProvinces(
           regionsData,
           data.dates[todayDate].countries.Spain,
@@ -38,13 +39,15 @@ const HomePage = () => {
         );
         setLoading(false);
       });
-  }, []);
+  };
 
   const handlePropertyChange = (event: any): any => {
     let newProperty = event.target.value;
     setSelectedProperty(newProperty);
-    calcTopProvinces(countryData, totalData, newProperty);
-    setDomainData(calculateDomain(countryData, newProperty));
+
+    /* calcTopProvinces(countryData, totalData, newProperty);
+    setDataSet(getDataSet(countryData, newProperty));
+    setDomainData(calculateDomain(countryData, newProperty)); */
   };
 
   const calcTopProvinces = (
@@ -57,7 +60,6 @@ const HomePage = () => {
     regions.forEach((region: any) => {
       if (region.sub_regions.length > 0) {
         region.sub_regions.forEach((subRegion: any) => {
-          console.log(subRegion[selectedProp]);
           if (subRegion[selectedProp]) {
             let percentage =
               (subRegion[selectedProp] / allData[selectedProp]) * 100;
@@ -126,6 +128,7 @@ const HomePage = () => {
           </div>
           <div className="bg-white rounded-lg shadow-lg">
             <MapChart
+              dataSet={dataSet}
               domainData={domainData}
               countryData={countryData}
               setTooltipContent={setContent}
@@ -136,13 +139,19 @@ const HomePage = () => {
         </div>
         <div className="overflow-auto h-128 col-span-1 bg-white rounded-lg shadow-lg px-4 py-2 flex flex-col space-y-2">
           <span className="text-xl font-medium">Top provincias</span>
-          <ul className="flex flex-col space-y-4">
-            {topProvinces.map((province: any) => (
-              <li className="flex justify-between items-end">
-                <span>{province.name}</span>{' '}
-                <span className="font-medium text-md">
-                  ({Math.round(province.percentage)}%)
-                </span>
+          <ul>
+            {topProvinces.map((province: any, index: number) => (
+              <li
+                key={`${index}-${province.name}`}
+                className="flex justify-between items-end mb-3"
+              >
+                <div className="truncate">{province.name}</div>{' '}
+                <div className="font-medium text-md">
+                  {province.percentage >= 1
+                    ? province.percentage.toFixed(0)
+                    : province.percentage.toFixed(1)}
+                  %
+                </div>
               </li>
             ))}
           </ul>

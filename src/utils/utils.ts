@@ -10,6 +10,24 @@ export const rounded = (num: number): string => {
   }
 };
 
+export const getDataSet = (data: any, property: any): any => {
+  let propertyCriteria = property;
+  let numbers: any[] = [];
+
+  data.forEach((region: any) => {
+    // there are sub regions
+    if (region.sub_regions.length > 0) {
+      region.sub_regions.forEach((subRegion: any) => {
+        numbers.push(subRegion[propertyCriteria]);
+      });
+    } else {
+      numbers.push(region[propertyCriteria]);
+    }
+  });
+
+  return numbers;
+};
+
 export const calculateDomain = (data: any, property: any): any => {
   let propertyCriteria = property;
 
@@ -69,6 +87,8 @@ export const calculateDomain = (data: any, property: any): any => {
 };
 
 export const getTodayDate = (): string => {
+  // API's date format
+  // yyyy-mm-dd
   let todayDate = '';
 
   const today = new Date();
