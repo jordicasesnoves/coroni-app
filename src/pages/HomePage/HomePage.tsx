@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react';
 import { getCountryDataByDate } from '../../services/api';
 import ReactTooltip from 'react-tooltip';
 import { GridDataCard, MapChart } from '../../components';
-import { calculateDomain, getDataSet, getTodayDate } from '../../utils/utils';
+import {
+  calculateDomain,
+  getDataSet,
+  getTodayDate,
+  getYesterdayDate,
+} from '../../utils/utils';
 
 const HomePage = () => {
   const [totalData, setTotalData] = useState<any>(null);
@@ -23,18 +28,29 @@ const HomePage = () => {
 
   const getData = (): any => {
     let todayDate = getTodayDate();
-    getCountryDataByDate(todayDate, 'Spain')
+    let yesterdayDate = getYesterdayDate();
+    let date = new Date();
+    let hours = date.getHours();
+    let shouldLoadTodayItems: boolean = hours > 9;
+
+    getCountryDataByDate(
+      shouldLoadTodayItems ? todayDate : yesterdayDate,
+      'Spain'
+    )
       .then((res) => res.json())
       .catch((err) => console.log(err))
       .then((data) => {
-        setTotalData(data.dates[todayDate].countries.Spain);
-        const regionsData = data.dates[todayDate].countries.Spain.regions;
+        let selectedDate = shouldLoadTodayItems ? todayDate : yesterdayDate;
+        console.log(selectedDate);
+
+        setTotalData(data.dates[selectedDate].countries.Spain);
+        const regionsData = data.dates[selectedDate].countries.Spain.regions;
         setCountryData(regionsData);
         setDomainData(calculateDomain(regionsData, selectedProperty));
         setDataSet(getDataSet(regionsData, selectedProperty));
         calcTopProvinces(
           regionsData,
-          data.dates[todayDate].countries.Spain,
+          data.dates[selectedDate].countries.Spain,
           selectedProperty
         );
         setLoading(false);
@@ -44,10 +60,6 @@ const HomePage = () => {
   const handlePropertyChange = (event: any): any => {
     let newProperty = event.target.value;
     setSelectedProperty(newProperty);
-
-    /* calcTopProvinces(countryData, totalData, newProperty);
-    setDataSet(getDataSet(countryData, newProperty));
-    setDomainData(calculateDomain(countryData, newProperty)); */
   };
 
   const calcTopProvinces = (

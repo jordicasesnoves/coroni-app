@@ -108,3 +108,28 @@ export const getTodayDate = (): string => {
 
   return todayDate;
 };
+
+export const getYesterdayDate = (): string => {
+  // API's date format
+  // yyyy-mm-dd
+  let yesterdayDate = '';
+
+  const today = new Date();
+  today.setDate(today.getDate() - 1);
+
+  let dd: string = today.getDate().toString();
+  let mm: string = (today.getMonth() + 1).toString();
+  const yyyy: string = today.getFullYear().toString();
+
+  if (parseInt(dd) < 10) {
+    dd = `0${dd}`;
+  }
+
+  if (parseInt(mm) < 10) {
+    mm = `0${mm}`;
+  }
+
+  yesterdayDate = `${yyyy}-${mm}-${dd}`;
+
+  return yesterdayDate;
+};
