@@ -14,6 +14,8 @@ const HomePage = () => {
     'today_confirmed'
   );
 
+  const [topProvinces, setTopProvinces] = useState<any>(null);
+
   useEffect(() => {
     // API's date format
     // yyyy-mm-dd
@@ -29,7 +31,11 @@ const HomePage = () => {
         const regionsData = data.dates[todayDate].countries.Spain.regions;
         setCountryData(regionsData);
         setDomainData(calculateDomain(regionsData, selectedProperty));
-        calcTopProvinces(regionsData);
+        calcTopProvinces(
+          regionsData,
+          data.dates[todayDate].countries.Spain,
+          selectedProperty
+        );
         setLoading(false);
       });
   }, []);
@@ -37,11 +43,46 @@ const HomePage = () => {
   const handlePropertyChange = (event: any): any => {
     let newProperty = event.target.value;
     setSelectedProperty(newProperty);
+    calcTopProvinces(countryData, totalData, newProperty);
     setDomainData(calculateDomain(countryData, newProperty));
   };
 
-  const calcTopProvinces = (data: any): void => {
-    console.log(data);
+  const calcTopProvinces = (
+    regions: any,
+    allData: any,
+    property: any
+  ): void => {
+    let selectedProp = property;
+    let topProvinces: any = [];
+    regions.forEach((region: any) => {
+      if (region.sub_regions.length > 0) {
+        region.sub_regions.forEach((subRegion: any) => {
+          console.log(subRegion[selectedProp]);
+          if (subRegion[selectedProp]) {
+            let percentage =
+              (subRegion[selectedProp] / allData[selectedProp]) * 100;
+            topProvinces.push({
+              name: subRegion.name,
+              percentage: percentage,
+            });
+          }
+        });
+      } else {
+        if (region[selectedProp]) {
+          let percentage = (region[selectedProp] / allData[selectedProp]) * 100;
+          topProvinces.push({
+            name: region.name,
+            percentage: percentage,
+          });
+        }
+      }
+    });
+
+    topProvinces.sort((a: any, b: any) =>
+      a.percentage > b.percentage ? -1 : 1
+    );
+
+    setTopProvinces(topProvinces);
   };
 
   if (loading) return <span>Loading...</span>;
@@ -68,7 +109,7 @@ const HomePage = () => {
       </div>
 
       <div className="grid grid-cols-4 gap-4">
-        <div className="col-span-2 flex flex-col space-y-2">
+        <div className="flex h-128 flex-col col-span-2 justify-between">
           <div className="flex items-center justify-between">
             <span className="text-3xl font-medium">Mapa provincias</span>
             <select
@@ -92,8 +133,18 @@ const HomePage = () => {
             <ReactTooltip>{content}</ReactTooltip>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-lg px-4 py-2 col-span-1 flex flex-col space-y-2">
+        <div className="overflow-auto h-128 col-span-1 bg-white rounded-lg shadow-lg px-4 py-2 flex flex-col space-y-2">
           <span className="text-xl font-medium">Top provincias</span>
+          <ul className="flex flex-col space-y-4">
+            {topProvinces.map((province: any) => (
+              <li className="flex justify-between items-end">
+                <span>{province.name}</span>{' '}
+                <span className="font-medium text-md">
+                  ({Math.round(province.percentage)}%)
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

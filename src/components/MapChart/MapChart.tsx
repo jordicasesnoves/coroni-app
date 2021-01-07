@@ -71,7 +71,6 @@ const MapChart = ({
 
   return (
     <ComposableMap
-      height={600}
       data-tip=""
       className="rounded-lg"
       projectionConfig={{ scale: 1000 }}
