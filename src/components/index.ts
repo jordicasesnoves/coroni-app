@@ -1,6 +1,8 @@
 import App from './App/App';
-import MapChart from './MapChart/MapChart';
-import GridDataCard from './GridDataCard/GridDataCard';
+import Header from './Header/Header';
 import Footer from './Footer/Footer';
 
-export { App, MapChart, GridDataCard, Footer };
+import MapChart from './MapChart/MapChart';
+import GridDataCard from './GridDataCard/GridDataCard';
+
+export { App, MapChart, GridDataCard, Header, Footer };

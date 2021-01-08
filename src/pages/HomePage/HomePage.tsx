@@ -128,7 +128,7 @@ const HomePage = () => {
       <div className="grid grid-cols-4 gap-4">
         <div className="flex h-96 md:h-128 flex-col col-span-4 md:col-span-3 justify-between">
           <div className="flex mb-4 items-center justify-between">
-            <span className="text-3xl font-medium">Mapa provincias</span>
+            <span className="text-3xl font-medium">Mapa provincial</span>
             <select
               className="bg-transparent self-center text-gray-600"
               value={selectedProperty}
@@ -140,7 +140,7 @@ const HomePage = () => {
               <option value="today_new_deaths">Muertes 24h</option>
             </select>
           </div>
-          <div className="flex-1 h-64 md:h-96 bg-white rounded-lg shadow-lg">
+          <div className="flex-1 h-64 md:h-96 bg-white rounded-lg border border-gray-200 ">
             <MapChart
               dataSet={dataSet}
               domainData={domainData}
@@ -151,7 +151,7 @@ const HomePage = () => {
             <ReactTooltip>{content}</ReactTooltip>
           </div>
         </div>
-        <div className="overflow-auto h-96 md:h-128 col-span-4 md:col-span-1 bg-white rounded-lg shadow-lg px-4 py-2 flex flex-col space-y-2">
+        <div className="overflow-auto h-96 md:h-128 col-span-4 md:col-span-1 bg-white rounded-lg border border-gray-200 px-4 py-2 flex flex-col space-y-2">
           <span className="text-xl font-medium">Top provincias</span>
           <ul>
             {topProvinces.map((province: any, index: number) => (

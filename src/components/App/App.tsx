@@ -7,14 +7,15 @@ import {
   Switch,
 } from 'react-router-dom';
 import { Routes } from '../../routes';
-import { Footer } from '../index';
+import { Header, Footer } from '../index';
 
 const App = (): JSX.Element => {
   return (
-    <div className="bg-gray-100">
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto py-8 px-4">
-          <Router>
+    <Router>
+      <div className="bg-gray-100">
+        <Header />
+        <div className="min-h-screen">
+          <div className="max-w-7xl mx-auto py-8 px-4">
             <Switch>
               {Routes.map((route: RouteProps) => (
                 <Route
@@ -25,11 +26,11 @@ const App = (): JSX.Element => {
                 />
               ))}
             </Switch>
-          </Router>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </Router>
   );
 };
 
