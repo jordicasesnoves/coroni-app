@@ -54,6 +54,9 @@ const MapChart = ({
     return cur;
   };
 
+  const width = 800;
+  const height = width / 2;
+
   const colorScale = scaleQuantile<string>()
     .domain(dataSet)
     .range([
@@ -74,6 +77,7 @@ const MapChart = ({
       data-tip=""
       className="rounded-lg"
       projectionConfig={{ scale: 1000 }}
+      style={{ width: '100%', height: '100%' }}
     >
       <ZoomableGroup center={[-3.5, 40]} zoom={3.5}>
         {/* World Map */}
