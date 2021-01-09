@@ -35,13 +35,14 @@ const HomePage = () => {
   const getData = (): any => {
     let todayDate = getTodayDate();
     let yesterdayDate = getYesterdayDate();
-    let weekAgoDate = getTimeAgoDate(60);
+    let weekAgoDate = getTimeAgoDate(14);
+    console.log(weekAgoDate, yesterdayDate);
 
     let date = new Date();
     let hours = date.getHours();
 
-    // load today data when >= 0am
-    let shouldLoadTodayItems: boolean = hours > 0;
+    // load today data when >= 9am
+    let shouldLoadTodayItems: boolean = hours > 9;
 
     getCountryDataByDateRange(
       weekAgoDate,
@@ -109,21 +110,29 @@ const HomePage = () => {
           title={totalData.today_confirmed}
           subtitle={'Confirmados'}
           chartData={calcChartData(allData, ['today_confirmed'])}
+          chartColor={'#3B82F6'}
+          percentage={3.4}
+        />
+        <GridDataCard
+          title={totalData.today_deaths}
+          subtitle={'Muertes'}
+          chartData={calcChartData(allData, ['today_deaths'])}
+          chartColor={'#EF4444'}
+          percentage={6}
         />
         <GridDataCard
           title={totalData.today_new_confirmed}
           subtitle={'Nuevos confirmados'}
           chartData={calcChartData(allData, ['today_new_confirmed'])}
+          chartColor={'#8B5CF6'}
+          percentage={-25.8}
         />
         <GridDataCard
           title={totalData.today_new_deaths}
           subtitle={'Nuevas muertes'}
           chartData={calcChartData(allData, ['today_new_deaths'])}
-        />
-        <GridDataCard
-          title={totalData.today_new_open_cases}
-          subtitle={'Nuevos casos abiertos'}
-          chartData={calcChartData(allData, ['today_new_open_cases'])}
+          chartColor={'#EF4444'}
+          percentage={-3.4}
         />
       </div>
 

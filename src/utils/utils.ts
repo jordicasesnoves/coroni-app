@@ -175,8 +175,8 @@ export const getTimeAgoDate = (timeAgo: number): string => {
   let date = new Date();
   let hours = date.getHours();
 
-  // load today data when >= 0am
-  let shouldLoadTodayItems: boolean = hours > 0;
+  // load today data when >= 9am
+  let shouldLoadTodayItems: boolean = hours > 9;
 
   const today = new Date();
   today.setDate(
