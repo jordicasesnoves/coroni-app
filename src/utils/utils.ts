@@ -86,6 +86,41 @@ export const calculateDomain = (data: any, property: any): any => {
   return [minRegion, maxRegion];
 };
 
+export const calcTopProvinces = (
+  regions: any,
+  allData: any,
+  property: any
+): any => {
+  let selectedProp = property;
+  let topProvinces: any = [];
+  regions.forEach((region: any) => {
+    if (region.sub_regions.length > 0) {
+      region.sub_regions.forEach((subRegion: any) => {
+        if (subRegion[selectedProp]) {
+          let percentage =
+            (subRegion[selectedProp] / allData[selectedProp]) * 100;
+          topProvinces.push({
+            name: subRegion.name,
+            percentage: percentage,
+          });
+        }
+      });
+    } else {
+      if (region[selectedProp]) {
+        let percentage = (region[selectedProp] / allData[selectedProp]) * 100;
+        topProvinces.push({
+          name: region.name,
+          percentage: percentage,
+        });
+      }
+    }
+  });
+
+  topProvinces.sort((a: any, b: any) => (a.percentage > b.percentage ? -1 : 1));
+
+  return topProvinces;
+};
+
 export const getTodayDate = (): string => {
   // API's date format
   // yyyy-mm-dd
@@ -132,4 +167,35 @@ export const getYesterdayDate = (): string => {
   yesterdayDate = `${yyyy}-${mm}-${dd}`;
 
   return yesterdayDate;
+};
+
+export const getTimeAgoDate = (timeAgo: number): string => {
+  let timeAgoDate = '';
+
+  let date = new Date();
+  let hours = date.getHours();
+
+  // load today data when >= 0am
+  let shouldLoadTodayItems: boolean = hours > 0;
+
+  const today = new Date();
+  today.setDate(
+    today.getDate() - (shouldLoadTodayItems ? timeAgo - 1 : timeAgo)
+  );
+
+  let dd: string = today.getDate().toString();
+  let mm: string = (today.getMonth() + 1).toString();
+  const yyyy: string = today.getFullYear().toString();
+
+  if (parseInt(dd) < 10) {
+    dd = `0${dd}`;
+  }
+
+  if (parseInt(mm) < 10) {
+    mm = `0${mm}`;
+  }
+
+  timeAgoDate = `${yyyy}-${mm}-${dd}`;
+
+  return timeAgoDate;
 };

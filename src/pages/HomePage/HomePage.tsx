@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
-import { getCountryDataByDate } from '../../services/api';
+import {
+  getCountryDataByDate,
+  getCountryDataByDateRange,
+} from '../../services/api';
 import ReactTooltip from 'react-tooltip';
 import { GridDataCard, MapChart } from '../../components';
 import {
+  calcTopProvinces,
   calculateDomain,
   getDataSet,
   getTodayDate,
+  getTimeAgoDate,
   getYesterdayDate,
 } from '../../utils/utils';
 
@@ -19,8 +24,9 @@ const HomePage = () => {
     'today_confirmed'
   );
   const [dataSet, setDataSet] = useState<any>(null);
-
   const [topProvinces, setTopProvinces] = useState<any>(null);
+
+  const [allData, setAllData] = useState<any>(null);
 
   useEffect(() => {
     getData();
@@ -29,13 +35,16 @@ const HomePage = () => {
   const getData = (): any => {
     let todayDate = getTodayDate();
     let yesterdayDate = getYesterdayDate();
+    let weekAgoDate = getTimeAgoDate(60);
+
     let date = new Date();
     let hours = date.getHours();
 
-    // load today data when >= 9am
-    let shouldLoadTodayItems: boolean = hours > 9;
+    // load today data when >= 0am
+    let shouldLoadTodayItems: boolean = hours > 0;
 
-    getCountryDataByDate(
+    getCountryDataByDateRange(
+      weekAgoDate,
       shouldLoadTodayItems ? todayDate : yesterdayDate,
       'Spain'
     )
@@ -43,62 +52,51 @@ const HomePage = () => {
       .catch((err) => console.log(err))
       .then((data) => {
         let selectedDate = shouldLoadTodayItems ? todayDate : yesterdayDate;
-        console.log(selectedDate);
+        const regionsData = data.dates[selectedDate].countries.Spain.regions;
+        setAllData(data);
 
         setTotalData(data.dates[selectedDate].countries.Spain);
-        const regionsData = data.dates[selectedDate].countries.Spain.regions;
         setCountryData(regionsData);
         setDomainData(calculateDomain(regionsData, selectedProperty));
         setDataSet(getDataSet(regionsData, selectedProperty));
-        calcTopProvinces(
-          regionsData,
-          data.dates[selectedDate].countries.Spain,
-          selectedProperty
+        setTopProvinces(
+          calcTopProvinces(
+            regionsData,
+            data.dates[selectedDate].countries.Spain,
+            selectedProperty
+          )
         );
         setLoading(false);
       });
   };
 
+  const calcChartData = (data: any, property: any): any => {
+    let _data: any = data.dates;
+    let keys: any = Object.keys(_data);
+    let chartData: any[] = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      let dataNumber: number = _data[keys[i]].countries.Spain[property];
+      if (dataNumber > 0) {
+        let date = keys[i];
+        date = date.split('-');
+        // yyyy, mm, dd
+
+        let newDate = new Date(date[0], date[1] - 1, date[2]);
+        const timestamp = newDate.getTime();
+
+        // only upload monday's data
+
+        chartData.push([timestamp, dataNumber]);
+      }
+    }
+
+    return chartData;
+  };
+
   const handlePropertyChange = (event: any): any => {
     let newProperty = event.target.value;
     setSelectedProperty(newProperty);
-  };
-
-  const calcTopProvinces = (
-    regions: any,
-    allData: any,
-    property: any
-  ): void => {
-    let selectedProp = property;
-    let topProvinces: any = [];
-    regions.forEach((region: any) => {
-      if (region.sub_regions.length > 0) {
-        region.sub_regions.forEach((subRegion: any) => {
-          if (subRegion[selectedProp]) {
-            let percentage =
-              (subRegion[selectedProp] / allData[selectedProp]) * 100;
-            topProvinces.push({
-              name: subRegion.name,
-              percentage: percentage,
-            });
-          }
-        });
-      } else {
-        if (region[selectedProp]) {
-          let percentage = (region[selectedProp] / allData[selectedProp]) * 100;
-          topProvinces.push({
-            name: region.name,
-            percentage: percentage,
-          });
-        }
-      }
-    });
-
-    topProvinces.sort((a: any, b: any) =>
-      a.percentage > b.percentage ? -1 : 1
-    );
-
-    setTopProvinces(topProvinces);
   };
 
   if (loading) return <span>Loading...</span>;
@@ -108,20 +106,24 @@ const HomePage = () => {
       <span className="text-2xl">Datos a fecha de: {totalData.date}</span>
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <GridDataCard
+          title={totalData.today_confirmed}
+          subtitle={'Confirmados'}
+          chartData={calcChartData(allData, ['today_confirmed'])}
+        />
+        <GridDataCard
           title={totalData.today_new_confirmed}
           subtitle={'Nuevos confirmados'}
+          chartData={calcChartData(allData, ['today_new_confirmed'])}
         />
         <GridDataCard
           title={totalData.today_new_deaths}
           subtitle={'Nuevas muertes'}
-        />
-        <GridDataCard
-          title={totalData.today_new_recovered}
-          subtitle={'Nuevos recuperados'}
+          chartData={calcChartData(allData, ['today_new_deaths'])}
         />
         <GridDataCard
           title={totalData.today_new_open_cases}
           subtitle={'Nuevos casos abiertos'}
+          chartData={calcChartData(allData, ['today_new_open_cases'])}
         />
       </div>
 
