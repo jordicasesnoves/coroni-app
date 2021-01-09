@@ -124,15 +124,15 @@ const HomePage = () => {
           title={totalData.today_new_confirmed}
           subtitle={'Nuevos confirmados'}
           chartData={calcChartData(allData, ['today_new_confirmed'])}
-          chartColor={'#8B5CF6'}
+          chartColor={'#7C3AED'}
           percentage={-25.8}
         />
         <GridDataCard
           title={totalData.today_new_deaths}
           subtitle={'Nuevas muertes'}
           chartData={calcChartData(allData, ['today_new_deaths'])}
-          chartColor={'#EF4444'}
-          percentage={-3.4}
+          chartColor={'#EC4899'}
+          percentage={-2.6}
         />
       </div>
 
